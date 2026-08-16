@@ -164,13 +164,14 @@ if (cluster.isMaster || cluster.isPrimary) {
         return res.status(400).json({ error: 'Full Name and Website URL are required.' });
       }
 
-      const studentEmail = email || req.body.emailId || mobileNumber || 'student@gmail.com';
+      const studentEmail = email || req.body.emailId || 'student@gmail.com';
+      const studentMobile = mobileNumber || 'N/A';
 
       const newStudent = {
         fullName: fullName.trim(),
         collegeName: collegeName ? collegeName.trim() : 'N/A',
         email: studentEmail.trim(),
-        mobileNumber: studentEmail.trim(),
+        mobileNumber: studentMobile.trim(),
         websiteUrl: websiteUrl.trim().startsWith('http') ? websiteUrl.trim() : `https://${websiteUrl.trim()}`,
         shortDescription: shortDescription ? shortDescription.trim() : '',
         photo: photo || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=300&q=80',
@@ -200,13 +201,14 @@ if (cluster.isMaster || cluster.isPrimary) {
         return res.status(400).json({ error: 'Invalid Student ID format' });
       }
 
-      const studentEmail = email || req.body.emailId || mobileNumber || 'student@gmail.com';
+      const studentEmail = email || req.body.emailId || 'student@gmail.com';
+      const studentMobile = mobileNumber || 'N/A';
 
       const updateData = {
         fullName: fullName.trim(),
         collegeName: collegeName ? collegeName.trim() : 'N/A',
         email: studentEmail.trim(),
-        mobileNumber: studentEmail.trim(),
+        mobileNumber: studentMobile.trim(),
         websiteUrl: websiteUrl.trim().startsWith('http') ? websiteUrl.trim() : `https://${websiteUrl.trim()}`,
         shortDescription: shortDescription ? shortDescription.trim() : ''
       };

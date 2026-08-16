@@ -354,7 +354,8 @@ function editStudent(id) {
     document.getElementById('editStudentId').value = student._id;
     document.getElementById('editFullName').value = student.fullName || '';
     document.getElementById('editCollegeName').value = student.collegeName || '';
-    document.getElementById('editEmail').value = student.email || student.emailId || student.mobileNumber || '';
+    document.getElementById('editEmail').value = student.email || student.emailId || '';
+    document.getElementById('editMobileNumber').value = (student.mobileNumber && !student.mobileNumber.includes('@')) ? student.mobileNumber : '';
     document.getElementById('editWebsiteUrl').value = student.websiteUrl || '';
     document.getElementById('editShortDescription').value = student.shortDescription || '';
 
@@ -418,6 +419,7 @@ async function saveEditStudent(e) {
     const fullName = document.getElementById('editFullName').value.trim();
     const collegeName = document.getElementById('editCollegeName').value.trim();
     const email = document.getElementById('editEmail').value.trim();
+    const mobileNumber = document.getElementById('editMobileNumber').value.trim();
     let websiteUrl = document.getElementById('editWebsiteUrl').value.trim();
     const shortDescription = document.getElementById('editShortDescription').value.trim();
 
@@ -436,7 +438,7 @@ async function saveEditStudent(e) {
                 fullName,
                 collegeName,
                 email,
-                mobileNumber: email,
+                mobileNumber,
                 websiteUrl,
                 shortDescription,
                 photo: editCompressedPhotoBase64
@@ -596,6 +598,7 @@ async function submitStudentForm(e) {
     const fullName = document.getElementById('fullName').value.trim();
     const collegeName = document.getElementById('collegeName').value.trim();
     const email = document.getElementById('email').value.trim();
+    const mobileNumber = document.getElementById('mobileNumber').value.trim();
     let websiteUrl = document.getElementById('websiteUrl').value.trim();
     const shortDescription = document.getElementById('shortDescription').value.trim();
 
@@ -622,7 +625,7 @@ async function submitStudentForm(e) {
                 fullName,
                 collegeName,
                 email,
-                mobileNumber: email,
+                mobileNumber,
                 websiteUrl,
                 shortDescription,
                 photo: compressedPhotoBase64
