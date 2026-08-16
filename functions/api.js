@@ -87,14 +87,16 @@ app.get(['/api/students', '/.netlify/functions/api/students'], getStudentsHandle
 
 const addStudentHandler = async (req, res) => {
   try {
-    const { fullName, collegeName, mobileNumber, websiteUrl, shortDescription, photo } = req.body;
+    const { fullName, collegeName, email, mobileNumber, websiteUrl, shortDescription, photo } = req.body;
     if (!fullName || !websiteUrl) {
       return res.status(400).json({ error: 'Full Name and Website URL are required.' });
     }
+    const studentEmail = email || req.body.emailId || mobileNumber || 'student@gmail.com';
     const newStudent = {
       fullName: fullName.trim(),
       collegeName: collegeName ? collegeName.trim() : 'N/A',
-      mobileNumber: mobileNumber ? mobileNumber.trim() : 'N/A',
+      email: studentEmail.trim(),
+      mobileNumber: studentEmail.trim(),
       websiteUrl: websiteUrl.trim().startsWith('http') ? websiteUrl.trim() : `https://${websiteUrl.trim()}`,
       shortDescription: shortDescription ? shortDescription.trim() : '',
       photo: photo || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=300&q=80',
@@ -114,14 +116,16 @@ app.post(['/api/students', '/.netlify/functions/api/students'], addStudentHandle
 const editStudentHandler = async (req, res) => {
   try {
     const { id } = req.params;
-    const { fullName, collegeName, mobileNumber, websiteUrl, shortDescription, photo } = req.body;
+    const { fullName, collegeName, email, mobileNumber, websiteUrl, shortDescription, photo } = req.body;
     if (!ObjectId.isValid(id)) {
       return res.status(400).json({ error: 'Invalid Student ID format' });
     }
+    const studentEmail = email || req.body.emailId || mobileNumber || 'student@gmail.com';
     const updateData = {
       fullName: fullName.trim(),
       collegeName: collegeName ? collegeName.trim() : 'N/A',
-      mobileNumber: mobileNumber ? mobileNumber.trim() : 'N/A',
+      email: studentEmail.trim(),
+      mobileNumber: studentEmail.trim(),
       websiteUrl: websiteUrl.trim().startsWith('http') ? websiteUrl.trim() : `https://${websiteUrl.trim()}`,
       shortDescription: shortDescription ? shortDescription.trim() : ''
     };

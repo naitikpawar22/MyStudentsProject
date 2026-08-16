@@ -526,10 +526,10 @@ body.light-theme {
     box-shadow: 0 4px 12px rgba(8, 145, 178, 0.25);
 }
 
-.mobile-pill {
-    background: #f1f5f9;
-    border: 1px solid var(--border-color);
-    color: var(--text-secondary);
+.email-pill {
+    background: #eef2ff;
+    border: 1px solid rgba(79, 70, 229, 0.25);
+    color: var(--primary);
     padding: 5px 14px;
     border-radius: var(--radius-full);
     font-size: 12px;
@@ -541,11 +541,50 @@ body.light-theme {
     transition: all var(--transition-fast);
 }
 
-.mobile-pill:hover {
-    color: var(--primary);
+.email-pill:hover {
+    color: #ffffff;
     border-color: var(--primary);
-    background: var(--primary-light);
+    background: var(--primary);
     transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+}
+
+.contact-us-btn {
+    background: #fdf2f8;
+    border: 1.5px solid rgba(236, 72, 153, 0.35);
+    color: var(--secondary);
+    padding: 11px 20px;
+    border-radius: var(--radius-full);
+    font-size: 13px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    transition: all var(--transition-bounce);
+    cursor: pointer;
+}
+
+.contact-us-btn:hover {
+    background: var(--secondary);
+    color: #ffffff;
+    border-color: transparent;
+    box-shadow: 0 6px 20px rgba(236, 72, 153, 0.35);
+    transform: scale(1.05);
+}
+
+.admin-email-link {
+    color: var(--primary);
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.admin-email-link:hover {
+    text-decoration: underline;
+    color: var(--secondary);
 }
 
 .student-desc {

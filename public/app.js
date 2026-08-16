@@ -104,7 +104,7 @@ function renderStudents(students) {
     let html = '';
     students.forEach((student) => {
         const photoUrl = student.photo || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=300&q=80';
-        const formattedMobile = student.mobileNumber || 'N/A';
+        const formattedEmail = student.email || student.emailId || (student.mobileNumber && student.mobileNumber.includes('@') ? student.mobileNumber : 'student@gmail.com');
         const formattedCollege = student.collegeName || 'Student';
         let websiteUrl = student.websiteUrl || '#';
         if (websiteUrl !== '#' && !websiteUrl.startsWith('http')) {
@@ -122,14 +122,17 @@ function renderStudents(students) {
                     <div class="student-header-row">
                         <h4 class="student-name">${escapeHtml(student.fullName)}</h4>
                         <span class="college-pill"><i class="fa-solid fa-building-columns"></i> ${escapeHtml(formattedCollege)}</span>
-                        <a href="tel:${escapeHtml(formattedMobile)}" class="mobile-pill" onclick="event.stopPropagation()">
-                            <i class="fa-solid fa-phone"></i> ${escapeHtml(formattedMobile)}
+                        <a href="mailto:${escapeHtml(formattedEmail)}" class="email-pill" onclick="event.stopPropagation()" title="Send email to ${escapeHtml(student.fullName)}">
+                            <i class="fa-solid fa-envelope"></i> ${escapeHtml(formattedEmail)}
                         </a>
                     </div>
                     <p class="student-desc">${escapeHtml(student.shortDescription || 'No description provided.')}</p>
                 </div>
 
                 <div class="student-action-area">
+                    <a href="mailto:${escapeHtml(formattedEmail)}" class="contact-us-btn" onclick="event.stopPropagation()" title="Send Email">
+                        <i class="fa-solid fa-paper-plane"></i> Contact Us
+                    </a>
                     <button class="view-website-btn" onclick="event.stopPropagation(); openWebsiteNewTab('${escapeHtml(websiteUrl)}')">
                         <i class="fa-solid fa-arrow-up-right-from-square"></i> Open Website
                     </button>
@@ -176,6 +179,7 @@ function filterStudents() {
         (s.fullName && s.fullName.toLowerCase().includes(query)) ||
         (s.collegeName && s.collegeName.toLowerCase().includes(query)) ||
         (s.shortDescription && s.shortDescription.toLowerCase().includes(query)) ||
+        (s.email && s.email.toLowerCase().includes(query)) ||
         (s.mobileNumber && s.mobileNumber.toLowerCase().includes(query))
     );
     renderStudents(filtered);
@@ -288,6 +292,7 @@ function renderAdminStudents(students) {
     students.forEach((student) => {
         const studentId = student._id;
         const photoUrl = student.photo || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=300&q=80';
+        const formattedEmail = student.email || student.emailId || (student.mobileNumber && student.mobileNumber.includes('@') ? student.mobileNumber : 'student@gmail.com');
         let websiteUrl = student.websiteUrl || '#';
         if (websiteUrl !== '#' && !websiteUrl.startsWith('http')) {
             websiteUrl = 'https://' + websiteUrl;
@@ -303,7 +308,7 @@ function renderAdminStudents(students) {
                         <span class="college-pill"><i class="fa-solid fa-building-columns"></i> ${escapeHtml(student.collegeName || 'N/A')}</span>
                     </div>
                     <div class="admin-contact-row">
-                        <span><i class="fa-solid fa-phone"></i> ${escapeHtml(student.mobileNumber || 'N/A')}</span>
+                        <a href="mailto:${escapeHtml(formattedEmail)}" class="admin-email-link"><i class="fa-solid fa-envelope"></i> ${escapeHtml(formattedEmail)}</a>
                         <span class="admin-url-text" onclick="openWebsiteNewTab('${escapeHtml(websiteUrl)}')"><i class="fa-solid fa-link"></i> ${escapeHtml(websiteUrl)}</span>
                     </div>
                 </div>
@@ -332,6 +337,7 @@ function filterAdminStudents() {
     const filtered = allStudents.filter(s => 
         (s.fullName && s.fullName.toLowerCase().includes(query)) ||
         (s.collegeName && s.collegeName.toLowerCase().includes(query)) ||
+        (s.email && s.email.toLowerCase().includes(query)) ||
         (s.mobileNumber && s.mobileNumber.toLowerCase().includes(query))
     );
     renderAdminStudents(filtered);
@@ -348,7 +354,7 @@ function editStudent(id) {
     document.getElementById('editStudentId').value = student._id;
     document.getElementById('editFullName').value = student.fullName || '';
     document.getElementById('editCollegeName').value = student.collegeName || '';
-    document.getElementById('editMobileNumber').value = student.mobileNumber || '';
+    document.getElementById('editEmail').value = student.email || student.emailId || student.mobileNumber || '';
     document.getElementById('editWebsiteUrl').value = student.websiteUrl || '';
     document.getElementById('editShortDescription').value = student.shortDescription || '';
 
@@ -411,7 +417,7 @@ async function saveEditStudent(e) {
     const id = document.getElementById('editStudentId').value;
     const fullName = document.getElementById('editFullName').value.trim();
     const collegeName = document.getElementById('editCollegeName').value.trim();
-    const mobileNumber = document.getElementById('editMobileNumber').value.trim();
+    const email = document.getElementById('editEmail').value.trim();
     let websiteUrl = document.getElementById('editWebsiteUrl').value.trim();
     const shortDescription = document.getElementById('editShortDescription').value.trim();
 
@@ -429,7 +435,8 @@ async function saveEditStudent(e) {
             body: JSON.stringify({
                 fullName,
                 collegeName,
-                mobileNumber,
+                email,
+                mobileNumber: email,
                 websiteUrl,
                 shortDescription,
                 photo: editCompressedPhotoBase64
@@ -588,7 +595,7 @@ async function submitStudentForm(e) {
     const submitBtn = document.getElementById('submitFormBtn');
     const fullName = document.getElementById('fullName').value.trim();
     const collegeName = document.getElementById('collegeName').value.trim();
-    const mobileNumber = document.getElementById('mobileNumber').value.trim();
+    const email = document.getElementById('email').value.trim();
     let websiteUrl = document.getElementById('websiteUrl').value.trim();
     const shortDescription = document.getElementById('shortDescription').value.trim();
 
@@ -614,7 +621,8 @@ async function submitStudentForm(e) {
                 passwordHash: verifiedAuthHash,
                 fullName,
                 collegeName,
-                mobileNumber,
+                email,
+                mobileNumber: email,
                 websiteUrl,
                 shortDescription,
                 photo: compressedPhotoBase64

@@ -81,7 +81,8 @@ if (cluster.isMaster || cluster.isPrimary) {
             {
               fullName: "Aarav Sharma",
               collegeName: "IIT Bombay",
-              mobileNumber: "+91 9876543210",
+              email: "aarav.sharma@iitb.ac.in",
+              mobileNumber: "aarav.sharma@iitb.ac.in",
               websiteUrl: "https://wikipedia.org",
               shortDescription: "Building next-gen AI platforms and full-stack web applications. Passionate about machine learning & open source.",
               photo: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
@@ -90,7 +91,8 @@ if (cluster.isMaster || cluster.isPrimary) {
             {
               fullName: "Priya Patel",
               collegeName: "BITS Pilani",
-              mobileNumber: "+91 9123456789",
+              email: "priya.patel@bits-pilani.ac.in",
+              mobileNumber: "priya.patel@bits-pilani.ac.in",
               websiteUrl: "https://github.com",
               shortDescription: "Frontend UI/UX engineer crafting beautiful pixel-perfect web experiences and intuitive user interfaces.",
               photo: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=300&q=80",
@@ -99,7 +101,8 @@ if (cluster.isMaster || cluster.isPrimary) {
             {
               fullName: "Naitik Kumar",
               collegeName: "Delhi Technological University",
-              mobileNumber: "+91 9988776655",
+              email: "naitik.kumar@dtu.ac.in",
+              mobileNumber: "naitik.kumar@dtu.ac.in",
               websiteUrl: "https://google.com",
               shortDescription: "Full stack developer specializing in Node.js, Express, MongoDB and modern web solutions.",
               photo: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80",
@@ -155,16 +158,19 @@ if (cluster.isMaster || cluster.isPrimary) {
   // Add new student
   app.post('/api/students', async (req, res) => {
     try {
-      const { passwordHash, fullName, collegeName, mobileNumber, websiteUrl, shortDescription, photo } = req.body;
+      const { passwordHash, fullName, collegeName, email, mobileNumber, websiteUrl, shortDescription, photo } = req.body;
 
       if (!fullName || !websiteUrl) {
         return res.status(400).json({ error: 'Full Name and Website URL are required.' });
       }
 
+      const studentEmail = email || req.body.emailId || mobileNumber || 'student@gmail.com';
+
       const newStudent = {
         fullName: fullName.trim(),
         collegeName: collegeName ? collegeName.trim() : 'N/A',
-        mobileNumber: mobileNumber ? mobileNumber.trim() : 'N/A',
+        email: studentEmail.trim(),
+        mobileNumber: studentEmail.trim(),
         websiteUrl: websiteUrl.trim().startsWith('http') ? websiteUrl.trim() : `https://${websiteUrl.trim()}`,
         shortDescription: shortDescription ? shortDescription.trim() : '',
         photo: photo || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=300&q=80',
@@ -188,16 +194,19 @@ if (cluster.isMaster || cluster.isPrimary) {
   app.put('/api/students/:id', async (req, res) => {
     try {
       const { id } = req.params;
-      const { fullName, collegeName, mobileNumber, websiteUrl, shortDescription, photo } = req.body;
+      const { fullName, collegeName, email, mobileNumber, websiteUrl, shortDescription, photo } = req.body;
 
       if (!ObjectId.isValid(id)) {
         return res.status(400).json({ error: 'Invalid Student ID format' });
       }
 
+      const studentEmail = email || req.body.emailId || mobileNumber || 'student@gmail.com';
+
       const updateData = {
         fullName: fullName.trim(),
         collegeName: collegeName ? collegeName.trim() : 'N/A',
-        mobileNumber: mobileNumber ? mobileNumber.trim() : 'N/A',
+        email: studentEmail.trim(),
+        mobileNumber: studentEmail.trim(),
         websiteUrl: websiteUrl.trim().startsWith('http') ? websiteUrl.trim() : `https://${websiteUrl.trim()}`,
         shortDescription: shortDescription ? shortDescription.trim() : ''
       };
