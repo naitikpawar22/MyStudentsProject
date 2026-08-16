@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Students Project Showcase & Admin Control Panel</title>
+    <!-- Google Fonts & Font Awesome Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="light-theme">
+
+    <!-- Header Navigation -->
+    <header class="main-header">
+        <div class="header-container">
+            <div class="logo-group">
+                <div class="logo-icon">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+                <div class="logo-text">
+                    <h1>Uni<span>Sphere</span></h1>
+                    <p>Students Project</p>
+                </div>
+            </div>
+
+            <div class="header-search">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                <input type="text" id="searchInput" placeholder="Search by student, college, or skill..." onkeyup="filterStudents()">
+            </div>
+
+            <div class="header-actions">
+                <!-- My Exam Button -->
+                <button class="exam-btn" id="openExamModalBtn" onclick="openExamModal()">
+                    <i class="fa-solid fa-file-pen"></i>
+                    <span>My Exam</span>
+                </button>
+
+                <!-- Top Right Corner Button: Add My Project -->
+                <button class="add-project-btn" id="openPasswordModalBtn" onclick="promptPasswordModal()">
+                    <i class="fa-solid fa-plus-circle"></i>
+                    <span>Add My Project</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="main-content">
+        <!-- Hero Banner -->
+        <section class="hero-banner">
+            <div class="hero-text">
+                <h2>Discover Inspiring <span>Students Projects</span></h2>
+                <p>Browse registered student portfolios with circular photos, college details, and live URLs. Tap any student row to view their website instantly in a new tab!</p>
+            </div>
+        </section>
+
+        <!-- Student List Header -->
+        <div class="section-title-bar">
+            <h3><i class="fa-solid fa-users"></i> Registered Student Showcase</h3>
+            <span class="count-badge" id="studentCountBadge">0 Students</span>
+        </div>
+
+        <!-- Student Row Container -->
+        <div class="students-list-container" id="studentsList">
+            <!-- Loading State -->
+            <div class="loading-state" id="loadingState">
+                <div class="spinner"></div>
+                <p>Loading registered student projects...</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Security Verification Modal -->
+    <div class="modal-overlay" id="passwordModal">
+        <div class="modal-card password-card">
+            <button class="close-modal-btn" onclick="closePasswordModal()"><i class="fa-solid fa-xmark"></i></button>
+            <div class="modal-header text-center">
+                <div class="lock-icon-wrapper">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <h3>Security Verification</h3>
+                <p>Enter password to add project or access Admin Panel</p>
+            </div>
+            <form id="passwordForm" onsubmit="verifyPassword(event)">
+                <div class="form-group">
+                    <label for="adminPassword"><i class="fa-solid fa-key"></i> Password</label>
+                    <div class="password-input-wrapper">
+                        <input type="password" id="adminPassword" placeholder="Enter security password" required autocomplete="current-password">
+                        <button type="button" class="toggle-pwd-btn" onclick="togglePasswordVisibility()"><i class="fa-solid fa-eye" id="pwdEye"></i></button>
+                    </div>
+                    <div class="error-msg" id="passwordError"></div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closePasswordModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="verifyPwdSubmitBtn"><i class="fa-solid fa-unlock"></i> Verify & Proceed</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Admin Panel Modal -->
+    <div class="modal-overlay" id="adminModal">
+        <div class="modal-card admin-card">
+            <button class="close-modal-btn" onclick="closeAdminModal()"><i class="fa-solid fa-xmark"></i></button>
+            <div class="modal-header flex-between">
+                <div class="header-with-badge">
+                    <div class="header-icon-pill admin-icon-pill">
+                        <i class="fa-solid fa-user-gear"></i>
+                    </div>
+                    <div>
+                        <h3>Admin Control Panel <span class="admin-shield-tag"><i class="fa-solid fa-shield-check"></i> MongoDB Live</span></h3>
+                        <p>Manage, edit, or delete registered student database entries</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="admin-search-bar">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="adminSearchInput" placeholder="Filter students by name, college or phone..." onkeyup="filterAdminStudents()">
+            </div>
+
+            <!-- Admin Students Table / Card List -->
+            <div class="admin-students-list" id="adminStudentsList">
+                <div class="loading-state">
+                    <div class="spinner"></div>
+                    <p>Fetching database entries...</p>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeAdminModal()">Close Admin Panel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Student Modal -->
+    <div class="modal-overlay" id="editStudentModal">
+        <div class="modal-card form-card">
+            <button class="close-modal-btn" onclick="closeEditModal()"><i class="fa-solid fa-xmark"></i></button>
+            <div class="modal-header">
+                <div class="header-icon-pill edit-pill">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                </div>
+                <div>
+                    <h3>Edit Student Project Record</h3>
+                    <p>Modify student details and save updates to MongoDB</p>
+                </div>
+            </div>
+
+            <form id="editStudentForm" onsubmit="saveEditStudent(event)">
+                <input type="hidden" id="editStudentId">
+                <div class="form-grid">
+                    <!-- Full Name -->
+                    <div class="form-group">
+                        <label for="editFullName"><i class="fa-solid fa-user"></i> Full Name <span class="req">*</span></label>
+                        <input type="text" id="editFullName" required>
+                    </div>
+
+                    <!-- College Name -->
+                    <div class="form-group">
+                        <label for="editCollegeName"><i class="fa-solid fa-building-columns"></i> College Name <span class="req">*</span></label>
+                        <input type="text" id="editCollegeName" required>
+                    </div>
+
+                    <!-- Mobile Number -->
+                    <div class="form-group">
+                        <label for="editMobileNumber"><i class="fa-solid fa-phone"></i> Mobile Number <span class="req">*</span></label>
+                        <input type="tel" id="editMobileNumber" required>
+                    </div>
+
+                    <!-- Website URL -->
+                    <div class="form-group">
+                        <label for="editWebsiteUrl"><i class="fa-solid fa-globe"></i> Website URL <span class="req">*</span></label>
+                        <input type="url" id="editWebsiteUrl" required>
+                    </div>
+
+                    <!-- Photo Update with Auto-Compression -->
+                    <div class="form-group full-width">
+                        <label><i class="fa-solid fa-image"></i> Photo (Click below to change image)</label>
+                        <div class="upload-dropzone" id="editDropzone" onclick="document.getElementById('editPhotoInput').click()">
+                            <input type="file" id="editPhotoInput" accept="image/*" style="display:none" onchange="handleEditImageUpload(event)">
+                            <div class="compression-preview-container" id="editCompressionPreview">
+                                <div class="avatar-preview-wrapper">
+                                    <img id="editCompressedAvatarImg" src="" alt="Avatar Preview">
+                                    <span class="preview-badge"><i class="fa-solid fa-check"></i> Circle Avatar</span>
+                                </div>
+                                <div class="compression-stats">
+                                    <div class="file-name">Click dropzone to replace photo</div>
+                                    <div class="compression-tag"><i class="fa-solid fa-bolt"></i> Auto-compressed &lt; 100 KB</div>
+                                </div>
+                                <button type="button" class="change-photo-btn">Change Photo</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Short Description -->
+                    <div class="form-group full-width">
+                        <label for="editShortDescription"><i class="fa-solid fa-align-left"></i> Short Description <span class="req">*</span></label>
+                        <textarea id="editShortDescription" rows="3" required></textarea>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="saveEditBtn">
+                        <i class="fa-solid fa-floppy-disk"></i> Update MongoDB Record
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Project Form Modal -->
+    <div class="modal-overlay" id="addProjectModal">
+        <div class="modal-card form-card">
+            <button class="close-modal-btn" onclick="closeAddProjectModal()"><i class="fa-solid fa-xmark"></i></button>
+            <div class="modal-header">
+                <div class="header-icon-pill">
+                    <i class="fa-solid fa-rocket"></i>
+                </div>
+                <div>
+                    <h3>Add Your Student Project</h3>
+                    <p>Publish your portfolio and website to the student showcase database</p>
+                </div>
+            </div>
+
+            <form id="addStudentForm" onsubmit="submitStudentForm(event)">
+                <div class="form-grid">
+                    <!-- Full Name -->
+                    <div class="form-group">
+                        <label for="fullName"><i class="fa-solid fa-user"></i> Full Name <span class="req">*</span></label>
+                        <input type="text" id="fullName" placeholder="e.g. Naitik Kumar" required>
+                    </div>
+
+                    <!-- College Name -->
+                    <div class="form-group">
+                        <label for="collegeName"><i class="fa-solid fa-building-columns"></i> College Name <span class="req">*</span></label>
+                        <input type="text" id="collegeName" placeholder="e.g. DTU / IIT Delhi" required>
+                    </div>
+
+                    <!-- Mobile Number -->
+                    <div class="form-group">
+                        <label for="mobileNumber"><i class="fa-solid fa-phone"></i> Mobile Number <span class="req">*</span></label>
+                        <input type="tel" id="mobileNumber" placeholder="e.g. +91 9876543210" required>
+                    </div>
+
+                    <!-- Website URL -->
+                    <div class="form-group">
+                        <label for="websiteUrl"><i class="fa-solid fa-globe"></i> Website URL <span class="req">*</span></label>
+                        <input type="url" id="websiteUrl" placeholder="https://mywebsite.com" required>
+                    </div>
+
+                    <!-- Photo Upload with Compression -->
+                    <div class="form-group full-width">
+                        <label><i class="fa-solid fa-image"></i> Add Photo (Auto-compressed to &lt; 100 KB) <span class="req">*</span></label>
+                        <div class="upload-dropzone" id="dropzone" onclick="document.getElementById('photoInput').click()">
+                            <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="handleImageUpload(event)">
+                            <div class="dropzone-content" id="uploadPlaceholder">
+                                <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
+                                <p class="primary-text">Click to upload photo or drag & drop</p>
+                                <p class="sub-text">Large photos (2-3MB+) are automatically converted to &lt; 100 KB!</p>
+                            </div>
+
+                            <!-- Compression Info & Preview -->
+                            <div class="compression-preview-container" id="compressionPreview" style="display:none;">
+                                <div class="avatar-preview-wrapper">
+                                    <img id="compressedAvatarImg" src="" alt="Compressed Avatar Preview">
+                                    <span class="preview-badge"><i class="fa-solid fa-check"></i> Circle Avatar</span>
+                                </div>
+                                <div class="compression-stats">
+                                    <div class="file-name" id="fileNameText">image.png</div>
+                                    <div class="stat-row">
+                                        <span class="stat-label">Original:</span>
+                                        <span class="stat-val original" id="originalSizeText">0 KB</span>
+                                    </div>
+                                    <div class="stat-row">
+                                        <span class="stat-label">Compressed:</span>
+                                        <span class="stat-val compressed" id="compressedSizeText">0 KB</span>
+                                    </div>
+                                    <div class="compression-tag" id="compressionTag">
+                                        <i class="fa-solid fa-bolt"></i> Reduced (&lt; 100 KB Guaranteed)
+                                    </div>
+                                </div>
+                                <button type="button" class="change-photo-btn" onclick="event.stopPropagation(); document.getElementById('photoInput').click()">Change</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Short Description -->
+                    <div class="form-group full-width">
+                        <label for="shortDescription"><i class="fa-solid fa-align-left"></i> Short Description <span class="req">*</span></label>
+                        <textarea id="shortDescription" rows="3" placeholder="Briefly describe your project, tech stack, or achievements..." required></textarea>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeAddProjectModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="submitFormBtn">
+                        <i class="fa-solid fa-cloud-arrow-up"></i> Save Project
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- My Exam Modal -->
+    <div class="modal-overlay" id="examModal">
+        <div class="modal-card exam-card">
+            <button class="close-modal-btn" onclick="closeExamModal()"><i class="fa-solid fa-xmark"></i></button>
+            <div class="modal-header">
+                <div class="header-icon-pill exam-pill">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+                <div>
+                    <h3>My Exam & Assessment Portal</h3>
+                    <p>View your exam schedules, admit cards, mock tests & scorecards</p>
+                </div>
+            </div>
+
+            <div class="exam-grid">
+                <div class="exam-item-card">
+                    <div class="exam-status-pill upcoming">Upcoming</div>
+                    <div class="exam-info">
+                        <h4>Full Stack Web Development Exam</h4>
+                        <p class="exam-meta"><i class="fa-regular fa-calendar"></i> Aug 28, 2026 | <i class="fa-regular fa-clock"></i> 10:00 AM</p>
+                        <p class="exam-details">Topics: Node.js Cluster, Express, MongoDB Atlas, HTML5 Canvas & Web Architecture.</p>
+                    </div>
+                    <button class="btn btn-secondary exam-action-btn" onclick="showToast('Admit Card Downloaded!', 'success')">
+                        <i class="fa-solid fa-download"></i> Admit Card
+                    </button>
+                </div>
+
+                <div class="exam-item-card">
+                    <div class="exam-status-pill active">Live Mock Test</div>
+                    <div class="exam-info">
+                        <h4>MongoDB & Web Architecture Practice Quiz</h4>
+                        <p class="exam-meta"><i class="fa-solid fa-stopwatch"></i> Duration: 45 Mins | 30 Questions</p>
+                        <p class="exam-details">Test your knowledge on database indexing, REST APIs, and image processing.</p>
+                    </div>
+                    <button class="btn btn-primary exam-action-btn" onclick="showToast('Starting Mock Exam...', 'success')">
+                        <i class="fa-solid fa-play"></i> Start Exam
+                    </button>
+                </div>
+
+                <div class="exam-item-card">
+                    <div class="exam-status-pill completed">Completed</div>
+                    <div class="exam-info">
+                        <h4>Frontend & UI Design Certification</h4>
+                        <p class="exam-meta"><i class="fa-solid fa-trophy"></i> Score: 98% (Grade A+)</p>
+                        <p class="exam-details">Verified certification credential issued on July 20, 2026.</p>
+                    </div>
+                    <button class="btn btn-secondary exam-action-btn" onclick="showToast('Certificate Opened', 'info')">
+                        <i class="fa-solid fa-award"></i> View Certificate
+                    </button>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeExamModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
